@@ -46,10 +46,10 @@ public static class PlayerCosmeticsLoadedPatch
         foreach (string key in properties.Keys)
         {
             if (Plugin.KnownCheats.TryGetValue(key, out string cheat))
-                mods.Add($"[<color=red>{cheat}</color>]");
+                mods.Add($"[<color=red>{cheat.ToUpper()}</color>]");
 
             if (Plugin.KnownMods.TryGetValue(key, out string mod))
-                mods.Add($"[<color=green>{mod}</color>]");
+                mods.Add($"[<color=green>{mod.ToUpper()}</color>]");
         }
 
         Extensions.PlayerMods[rig] = mods;

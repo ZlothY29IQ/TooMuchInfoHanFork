@@ -23,7 +23,7 @@ public static class NamePatch
 
         string text = $"{(specialCosmetics.Count > 0 ? specialCosmetics.Join(" ").Trim() + "\n" : "")}" +
                       $"{__instance.OwningNetPlayer.SanitizedNickName}{(Plugin.KnownPeople.TryGetValue(__instance.OwningNetPlayer.UserId, out string value) ? $" : <color=green>{value}</color>" : "")}\n" +
-                      $"<color={fpsColour}>{__instance.fps}</color> FPS : <color={pingColour}>{__instance.GetPing()}</color> MS\n" +
+                      $"<color={fpsColour}>{__instance.fps}</color> FPS : {__instance.GetPlatform().ParsePlatform()} : <color={pingColour}>{__instance.GetPing()}</color> MS\n" +
                       $"{__instance.GetAccountCreationDate():dd/MM/yyyy}\n" +
                       $"{__instance.GetPlayerMods().Join(" ")}";
 

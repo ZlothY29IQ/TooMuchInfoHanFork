@@ -28,11 +28,11 @@ public static class Extensions
     {
         return gamePlatform switch
                {
-                       GamePlatform.Unknown    => "<color=#000000>Unknown</color>",
-                       GamePlatform.Steam      => "<color=#0091F7>Steam</color>",
-                       GamePlatform.OculusPC   => "<color=#0091F7>Oculus PCVR</color>",
+                       GamePlatform.Unknown    => "<color=#000000>UNKNOWN</color>",
+                       GamePlatform.Steam      => "<color=#0091F7>STEAM</color>",
+                       GamePlatform.OculusPC   => "<color=#0091F7>OCULUS PCVR</color>",
                        GamePlatform.PC         => "<color=#000000>PC</color>",
-                       GamePlatform.Standalone => "<color=#26A6FF>Standalone</color>",
+                       GamePlatform.Standalone => "<color=#26A6FF>STANDALONE</color>",
                        var _                   => throw new ArgumentOutOfRangeException(),
                };
     }

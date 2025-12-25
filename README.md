@@ -4,7 +4,7 @@ A mod for Gorilla Tag that gives you too much info about a person
 
 # Installation
 
-- Download the release from [here](https://github.com/ZlothY29IQ/TooMuchInfo/releases/latest)
+- Download the release from [here](https://github.com/HanSolo1000Falcon/TooMuchInfo/releases/latest)
 - Drag the file `TooMuchInfo.dll` to your plugins folder
 - Start Gorilla Tag if needed
 

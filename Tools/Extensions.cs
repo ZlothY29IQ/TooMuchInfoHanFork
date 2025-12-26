@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Photon.Pun;
+using TMPro;
+using UnityEngine;
 
 namespace TooMuchInfo.Tools;
 
@@ -15,12 +18,32 @@ public enum GamePlatform
 
 public static class Extensions
 {
-    public static          Dictionary<VRRig, GamePlatform> PlayerPlatforms      = new();
-    public static          Dictionary<VRRig, List<string>> PlayerMods           = new();
-    public static          Dictionary<string, DateTime>    AccountCreationDates = new();
-    public static          List<VRRig>                     PlayersWithCosmetics = [];
-    public static readonly Dictionary<VRRig, int>          PlayerPing           = new();
+    public static           Dictionary<VRRig, GamePlatform> PlayerPlatforms      = new();
+    public static           Dictionary<VRRig, List<string>> PlayerMods           = new();
+    public static           Dictionary<string, DateTime>    AccountCreationDates = new();
+    public static           List<VRRig>                     PlayersWithCosmetics = [];
+    public static readonly  Dictionary<VRRig, int>          PlayerPing           = new();
 
+    public static string AnimateGradient(this string text, Color32 baseColor, float speed = 2f)
+    {
+        if (string.IsNullOrEmpty(text))
+            return text;
+
+        StringBuilder sb  = new();
+        int           len = text.Length;
+
+        for (int i = 0; i < len; i++)
+        {
+            float  offset  = (float)i                                                      / len;
+            float  t       = (Mathf.Sin(Time.time * speed + (1f - offset) * Mathf.PI * 2) + 1f) * 0.5f;
+            Color  blended = Color.Lerp(baseColor, Color.white, t);
+            string hex     = ColorUtility.ToHtmlStringRGB(blended);
+            sb.Append($"<color=#{hex}>{text[i]}</color>");
+        }
+
+        return sb.ToString();
+    }
+    
     public static GamePlatform GetPlatform(this VRRig rig) =>
             PlayerPlatforms.GetValueOrDefault(rig, GamePlatform.Unknown);
 

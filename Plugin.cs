@@ -5,6 +5,9 @@ using System.Net.Http;
 using BepInEx;
 using HarmonyLib;
 using Newtonsoft.Json;
+using Photon.Pun;
+using PlayFab;
+using TooMuchInfo.Tools;
 
 namespace TooMuchInfo;
 
@@ -121,4 +124,12 @@ public class Plugin : BaseUnityPlugin
                                                                   }
                                                               }
                                                           });
+
+    private void Update()
+    {
+        if (VRRig.LocalRig.playerText1 == null)
+            return;
+        
+        VRRig.LocalRig.playerText1.text = PhotonNetwork.LocalPlayer.DefaultName.AnimateGradient(VRRig.LocalRig.playerColor);
+    }
 }

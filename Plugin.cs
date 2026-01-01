@@ -130,6 +130,6 @@ public class Plugin : BaseUnityPlugin
         if (VRRig.LocalRig.playerText1 == null)
             return;
         
-        VRRig.LocalRig.playerText1.text = PhotonNetwork.LocalPlayer.DefaultName.AnimateGradient(VRRig.LocalRig.playerColor);
+        VRRig.LocalRig.playerText1.text = PhotonNetwork.LocalPlayer.NickName.AnimateGradient(VRRig.LocalRig.playerColor);
     }
 }

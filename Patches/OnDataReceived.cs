@@ -37,7 +37,7 @@ public static class OnDataReceived
         CosmeticsController.CosmeticSet cosmeticSet = rig.cosmeticSet;
         bool hasCosmetx =
                 cosmeticSet.items.Any(cosmetic => !cosmetic.isNullItem &&
-                                                  !rig.concatStringOfCosmeticsAllowed.Contains(
+                                                  !rig.rawCosmeticString.Contains(
                                                           cosmetic.itemName)) && !rig.inTryOnRoom;
 
         switch (hasCosmetx)

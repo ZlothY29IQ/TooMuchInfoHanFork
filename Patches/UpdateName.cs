@@ -16,7 +16,7 @@ public static class NamePatch
 
         List<string> specialCosmetics = [];
         specialCosmetics.AddRange(from key in Plugin.KnownCosmetics.Keys
-                                  where __instance.concatStringOfCosmeticsAllowed.Contains(key)
+                                  where __instance.rawCosmeticString.Contains(key)
                                   select Plugin.KnownCosmetics[key]);
 
         string fpsColour  = __instance.fps       < 72 ? __instance.fps        < 60 ? "red" : "orange" : "green";

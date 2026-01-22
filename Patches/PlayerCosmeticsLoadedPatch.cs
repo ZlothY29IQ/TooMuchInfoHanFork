@@ -25,19 +25,26 @@ public static class PlayerCosmeticsLoadedPatch
 
         if (!Extensions.AccountCreationDates.TryGetValue(rig.OwningNetPlayer.UserId, out playerCreationDate))
         {
-            TaskCompletionSource<GetAccountInfoResult> tcs = new();
+            try
+            {
+                TaskCompletionSource<GetAccountInfoResult> tcs = new();
 
-            PlayFabClientAPI.GetAccountInfo(new GetAccountInfoRequest { PlayFabId = rig.OwningNetPlayer.UserId, },
-                    result => tcs.SetResult(result),
-                    error =>
-                    {
-                        Debug.LogError("Failed to get account info: " + error.ErrorMessage);
-                        tcs.SetException(new Exception(error.ErrorMessage));
-                    });
+                PlayFabClientAPI.GetAccountInfo(new GetAccountInfoRequest { PlayFabId = rig.OwningNetPlayer.UserId, },
+                        result => tcs.SetResult(result),
+                        error =>
+                        {
+                            Debug.LogError("Failed to get account info: " + error.ErrorMessage);
+                            tcs.SetException(new Exception(error.ErrorMessage));
+                        });
 
-            GetAccountInfoResult result = await tcs.Task;
-            Extensions.AccountCreationDates[rig.OwningNetPlayer.UserId] = result.AccountInfo.Created;
-            playerCreationDate                                          = result.AccountInfo.Created;
+                GetAccountInfoResult result = await tcs.Task;
+                Extensions.AccountCreationDates[rig.OwningNetPlayer.UserId] = result.AccountInfo.Created;
+                playerCreationDate                                          = result.AccountInfo.Created;
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         Hashtable    properties = rig.OwningNetPlayer.GetPlayerRef().CustomProperties;

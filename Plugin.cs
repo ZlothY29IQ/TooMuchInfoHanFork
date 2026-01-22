@@ -4,9 +4,8 @@ using System.Linq;
 using System.Net.Http;
 using BepInEx;
 using HarmonyLib;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Photon.Pun;
-using PlayFab;
 using TooMuchInfo.Tools;
 
 namespace TooMuchInfo;
@@ -14,9 +13,6 @@ namespace TooMuchInfo;
 [BepInPlugin(Constants.PluginGuid, Constants.PluginName, Constants.PluginVersion)]
 public class Plugin : BaseUnityPlugin
 {
-    private const string GorillaInfoEndPointURL =
-            "https://raw.githubusercontent.com/HanSolo1000Falcon/GorillaInfo/main/";
-
     public static bool ShowSpecialCosmetics;
     public static bool ShowKnownPeople;
     public static bool ShowFpsPlatformPing;
@@ -50,86 +46,46 @@ public class Plugin : BaseUnityPlugin
     private void Start() => GorillaTagger.OnPlayerSpawned(() =>
                                                           {
                                                               using HttpClient httpClient = new();
-                                                              HttpResponseMessage gorillaInfoEndPointResponse =
+                                                              HttpResponseMessage response =
                                                                       httpClient.GetAsync(
-                                                                              GorillaInfoEndPointURL +
-                                                                              "KnownCheats.txt").Result;
+                                                                              "https://data.hamburbur.org/").Result;
 
-                                                              using (Stream stream = gorillaInfoEndPointResponse.Content
-                                                                            .ReadAsStreamAsync().Result)
+                                                              using (Stream hamburburDataStream =
+                                                                     response.Content.ReadAsStreamAsync().Result)
                                                               {
-                                                                  using (StreamReader reader = new(stream))
+                                                                  using (StreamReader reader = new(hamburburDataStream))
                                                                   {
+                                                                      JObject root = JObject.Parse(reader.ReadToEnd());
+
                                                                       KnownCheats =
-                                                                              JsonConvert
-                                                                                     .DeserializeObject<
-                                                                                              Dictionary<string,
-                                                                                                      string>>(reader
-                                                                                             .ReadToEnd());
-                                                                  }
-                                                              }
+                                                                              root["Known Cheats"]?
+                                                                                     .ToObject<Dictionary<string,
+                                                                                              string>>();
 
-                                                              HttpResponseMessage knownModsEndPointResponse =
-                                                                      httpClient.GetAsync(
-                                                                                      GorillaInfoEndPointURL +
-                                                                                      "KnownMods.txt")
-                                                                             .Result;
+                                                                      KnownMods =
+                                                                              root["Known Mods"]?
+                                                                                     .ToObject<Dictionary<string,
+                                                                                              string>>();
 
-                                                              using (Stream stream = knownModsEndPointResponse.Content
-                                                                            .ReadAsStreamAsync().Result)
-                                                              {
-                                                                  using (StreamReader reader = new(stream))
-                                                                  {
-                                                                      KnownMods = JsonConvert
-                                                                             .DeserializeObject<
-                                                                                      Dictionary<string, string>>(
-                                                                                      reader.ReadToEnd());
-                                                                  }
-                                                              }
+                                                                      KnownPeople =
+                                                                              root["Known People"]?
+                                                                                     .ToObject<Dictionary<string,
+                                                                                              string>>();
 
-                                                              HttpResponseMessage knownPeopleEndPointResponse =
-                                                                      httpClient.GetAsync(
-                                                                                      GorillaInfoEndPointURL +
-                                                                                      "KnownPeople.txt")
-                                                                             .Result;
-
-                                                              using (Stream stream = knownPeopleEndPointResponse.Content
-                                                                            .ReadAsStreamAsync().Result)
-                                                              {
-                                                                  using (StreamReader reader = new(stream))
-                                                                  {
-                                                                      KnownPeople = JsonConvert
-                                                                             .DeserializeObject<
-                                                                                      Dictionary<string, string>>(
-                                                                                      reader.ReadToEnd());
-                                                                  }
-                                                              }
-
-                                                              HttpResponseMessage knownCosmeticsEndPointResponse =
-                                                                      httpClient.GetAsync(
-                                                                                      GorillaInfoEndPointURL +
-                                                                                      "KnownCosmetics.txt")
-                                                                             .Result;
-
-                                                              using (Stream stream = knownCosmeticsEndPointResponse
-                                                                            .Content
-                                                                            .ReadAsStreamAsync().Result)
-                                                              {
-                                                                  using (StreamReader reader = new(stream))
-                                                                  {
-                                                                      KnownCosmetics = JsonConvert
-                                                                             .DeserializeObject<
-                                                                                      Dictionary<string, string>>(
-                                                                                      reader.ReadToEnd());
+                                                                      KnownCosmetics =
+                                                                              root["Special Cosmetics"]?
+                                                                                     .ToObject<Dictionary<string,
+                                                                                              string>>();
                                                                   }
                                                               }
                                                           });
 
     private void Update()
     {
-        if (VRRig.LocalRig.playerText1 == null)
+        if (VRRig.LocalRig.playerText1 == null || PhotonNetwork.LocalPlayer == null)
             return;
-        
-        VRRig.LocalRig.playerText1.text = PhotonNetwork.LocalPlayer.NickName.AnimateGradient(VRRig.LocalRig.playerColor);
+
+        VRRig.LocalRig.playerText1.text =
+                PhotonNetwork.LocalPlayer.NickName.AnimateGradient(VRRig.LocalRig.playerColor);
     }
 }

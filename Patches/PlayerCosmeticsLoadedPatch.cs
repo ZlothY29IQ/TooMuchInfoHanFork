@@ -54,7 +54,7 @@ public static class PlayerCosmeticsLoadedPatch
 
         Extensions.PlayerMods[rig] = mods;
 
-        string cosmeticsAllowed = rig.concatStringOfCosmeticsAllowed.ToLower();
+        string cosmeticsAllowed = rig.rawCosmeticString.ToLower();
 
         if (cosmeticsAllowed.Contains("s. first login"))
         {

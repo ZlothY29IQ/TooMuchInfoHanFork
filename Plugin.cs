@@ -48,7 +48,7 @@ public class Plugin : BaseUnityPlugin
                                                               using HttpClient httpClient = new();
                                                               HttpResponseMessage response =
                                                                       httpClient.GetAsync(
-                                                                              "https://data.hamburbur.org/").Result;
+                                                                              "https://hamburbur.org/data").Result;
 
                                                               using (Stream hamburburDataStream =
                                                                      response.Content.ReadAsStreamAsync().Result)
@@ -58,22 +58,22 @@ public class Plugin : BaseUnityPlugin
                                                                       JObject root = JObject.Parse(reader.ReadToEnd());
 
                                                                       KnownCheats =
-                                                                              root["Known Cheats"]?
+                                                                              root["knownCheats"]?
                                                                                      .ToObject<Dictionary<string,
                                                                                               string>>();
 
                                                                       KnownMods =
-                                                                              root["Known Mods"]?
+                                                                              root["knownMods"]?
                                                                                      .ToObject<Dictionary<string,
                                                                                               string>>();
 
                                                                       KnownPeople =
-                                                                              root["Known People"]?
+                                                                              root["knownPeople"]?
                                                                                      .ToObject<Dictionary<string,
                                                                                               string>>();
 
                                                                       KnownCosmetics =
-                                                                              root["Special Cosmetics"]?
+                                                                              root["specialCosmetics"]?
                                                                                      .ToObject<Dictionary<string,
                                                                                               string>>();
                                                                   }

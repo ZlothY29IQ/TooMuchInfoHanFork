@@ -16,7 +16,7 @@ public static class NamePatch
 
         List<string> specialCosmetics = [];
         specialCosmetics.AddRange(from key in Plugin.KnownCosmetics.Keys
-                                  where __instance.rawCosmeticString.Contains(key)
+                                  where __instance._playerOwnedCosmetics.Contains(key)
                                   select Plugin.KnownCosmetics[key]);
 
         string fpsColour  = __instance.fps       < 72 ? __instance.fps        < 60 ? "red" : "orange" : "green";
@@ -26,10 +26,10 @@ public static class NamePatch
         
 
         string nameLine =
-                __instance.OwningNetPlayer.SanitizedNickName
+                __instance.creator.SanitizedNickName
                           .AnimateGradient(__instance.playerColor) +
                 (Plugin.ShowKnownPeople &&
-                 Plugin.KnownPeople.TryGetValue(__instance.OwningNetPlayer.UserId, out string known)
+                 Plugin.KnownPeople.TryGetValue(__instance.creator.UserId, out string known)
                          ? $" : <color=green>{known}</color>"
                          : "");
 

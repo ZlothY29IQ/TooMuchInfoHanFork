@@ -7,6 +7,7 @@ using HarmonyLib;
 using Newtonsoft.Json.Linq;
 using Photon.Pun;
 using TooMuchInfo.Tools;
+using Extensions = TooMuchInfo.Tools.Extensions;
 
 namespace TooMuchInfo;
 
@@ -45,6 +46,15 @@ public class Plugin : BaseUnityPlugin
 
     private void Start() => GorillaTagger.OnPlayerSpawned(() =>
                                                           {
+                                                              VRRigCache.OnRigDeactivated += rigContainer =>
+                                                                  {
+                                                                      VRRig vrrig = rigContainer.vrrig;
+                                                                      
+                                                                      Extensions.PlayersWithCosmetics.Remove(vrrig);
+                                                                      Extensions.PlayerPlatforms.Remove(vrrig);
+                                                                      Extensions.PlayerMods.Remove(vrrig);
+                                                                  };
+                                                              
                                                               using HttpClient httpClient = new();
                                                               HttpResponseMessage response =
                                                                       httpClient.GetAsync(

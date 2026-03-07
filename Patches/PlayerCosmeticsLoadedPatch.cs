@@ -11,11 +11,13 @@ using UnityEngine;
 namespace TooMuchInfo.Patches;
 
 [HarmonyPatch(typeof(VRRig))]
-[HarmonyPatch("IUserCosmeticsCallback.OnGetUserCosmetics", MethodType.Normal)]
-public static class PlayerCosmeticsLoadedPatch
+internal static class OnCosmeticsLoadedPatch
 {
     private static readonly DateTime OculusPayDay = new(2023, 02, 06);
-    private static          void     Postfix(VRRig __instance) => OnLoad(__instance);
+
+    [HarmonyPatch("IUserCosmeticsCallback.OnGetUserCosmetics")]
+    [HarmonyPostfix]
+    private static void OnGetRigCosmetics(VRRig __instance) => OnLoad(__instance);
 
     private static async void OnLoad(VRRig rig)
     {
@@ -23,13 +25,13 @@ public static class PlayerCosmeticsLoadedPatch
 
         DateTime playerCreationDate;
 
-        if (!Extensions.AccountCreationDates.TryGetValue(rig.OwningNetPlayer.UserId, out playerCreationDate))
+        if (!Extensions.AccountCreationDates.TryGetValue(rig.creator.UserId, out playerCreationDate))
         {
             try
             {
                 TaskCompletionSource<GetAccountInfoResult> tcs = new();
 
-                PlayFabClientAPI.GetAccountInfo(new GetAccountInfoRequest { PlayFabId = rig.OwningNetPlayer.UserId, },
+                PlayFabClientAPI.GetAccountInfo(new GetAccountInfoRequest { PlayFabId = rig.creator.UserId, },
                         result => tcs.SetResult(result),
                         error =>
                         {
@@ -38,8 +40,8 @@ public static class PlayerCosmeticsLoadedPatch
                         });
 
                 GetAccountInfoResult result = await tcs.Task;
-                Extensions.AccountCreationDates[rig.OwningNetPlayer.UserId] = result.AccountInfo.Created;
-                playerCreationDate                                          = result.AccountInfo.Created;
+                Extensions.AccountCreationDates[rig.creator.UserId] = result.AccountInfo.Created;
+                playerCreationDate                                  = result.AccountInfo.Created;
             }
             catch
             {
@@ -47,7 +49,7 @@ public static class PlayerCosmeticsLoadedPatch
             }
         }
 
-        Hashtable    properties = rig.OwningNetPlayer.GetPlayerRef().CustomProperties;
+        Hashtable    properties = rig.creator.GetPlayerRef().CustomProperties;
         List<string> mods       = [];
 
         foreach (string key in properties.Keys)
@@ -61,7 +63,7 @@ public static class PlayerCosmeticsLoadedPatch
 
         Extensions.PlayerMods[rig] = mods;
 
-        string cosmeticsAllowed = rig.rawCosmeticString.ToLower();
+        string cosmeticsAllowed = string.Concat(rig._playerOwnedCosmetics).ToLower();
 
         if (cosmeticsAllowed.Contains("s. first login"))
         {
@@ -77,7 +79,7 @@ public static class PlayerCosmeticsLoadedPatch
             return;
         }
 
-        if (rig.OwningNetPlayer.GetPlayerRef().CustomProperties.Count > 1)
+        if (rig.creator.GetPlayerRef().CustomProperties.Count > 1)
         {
             Extensions.PlayerPlatforms[rig] = GamePlatform.PC;
 
